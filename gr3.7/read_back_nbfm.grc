@@ -438,7 +438,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(896, 416)</value>
+      <value>(896, 424)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -854,7 +854,7 @@
     </param>
     <param>
       <key>_io_cache</key>
-      <value>('Squelch to Burst', 'blk', [], [('0', 'float', 1)], [('0', 'float', 1)], '\n    This block adds an additial tag to the tags \n    "squelch_sob" with an extra tag "burst" True\n    and\n    "squelch_eob" with an extra tag "burst" False\n    ', [])</value>
+      <value>('Squelch to Burst', 'blk', [], [('0', 'float', 1)], [('0', 'float', 1)], '\n    This block blocks all the tags and translates squelch-tags to burst. \n    This is done as a 2-to-1 translation:\n    "squelch_sob" gets replaced with "burst" True\n    and\n    "squelch_eob" gets replaced with "burst" False\n    ', [])</value>
     </param>
     <param>
       <key>_source_code</key>
@@ -874,14 +874,14 @@ import pmt
 
 class blk(gr.sync_block):  # other base classes are basic_block, decim_block, interp_block
     """
-    This block adds an additial tag to the tags 
-    "squelch_sob" with an extra tag "burst" True
+    This block blocks all the tags and translates squelch-tags to burst. 
+    This is done as a 2-to-1 translation:
+    "squelch_sob" gets replaced with "burst" True
     and
-    "squelch_eob" with an extra tag "burst" False
+    "squelch_eob" gets replaced with "burst" False
     """
 
-    #def __init__(self, source_tag="squelch_sob", destination_tag="burst"):  # only default arguments here
-    def __init__(self):  # only default arguments here    
+    def __init__(self):
         """arguments to this function show up as parameters in GRC"""
         gr.sync_block.__init__(
             self,
@@ -890,6 +890,8 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
             out_sig=[np.float32]
         )
         self.squelch_state = False
+        # Modify the tag-propagation-policy so inbound tags are not propagated
+        self.set_tag_propagation_policy(gr.TPP_DONT)
 
     def work(self, input_items, output_items):
         for indx, sample in enumerate(input_items[0]):
@@ -930,7 +932,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 600)</value>
+      <value>(680, 600)</value>
     </param>
     <param>
       <key>_rotation</key>
